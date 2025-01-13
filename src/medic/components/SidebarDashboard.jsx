@@ -24,7 +24,7 @@ function SidebarDashboard({ userData, organizacionData }) {
 
     const navItemsPanel = [
         { title: 'Principal', iconClass: 'icon-screen-desktop', link: rootPath + '/dashboard' },
-        { title: 'Predicciones anteriores', iconClass: 'icon-bag', link: rootPath + '/comparativas' },
+        //{ title: 'Predicciones anteriores', iconClass: 'icon-bag', link: rootPath + '/comparativas' },
         // { title: 'Entradas', iconClass: 'icon-login', link: '#entradas-chart' },
         // { title: 'Facturas', iconClass: 'icon-chart', link: '#facturas-chart' },
         // { title: 'Conversión', iconClass: 'icon-graph', link: '#conversion-chart' },
