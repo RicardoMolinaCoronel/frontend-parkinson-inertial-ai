@@ -1,8 +1,26 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { rootPath } from "../../rootPath";
+import { AuthContext } from '../../auth/context/AuthContext';
+import { jwtDecode } from 'jwt-decode';
+
+
+
 function SidebarDashboard({ userData, organizacionData }) {
     const [activeIndex, setActiveIndex] = useState({ section: 0, item: 0 });
+    const [username, setUsername] = useState("")
+    const { authState} = useContext(AuthContext);
+
+    useEffect(() => {
+        if (authState.user.access) {
+            try {
+                const decodedToken = jwtDecode(authState.user.access);
+                setUsername(decodedToken.username || "") // Devuelve los grupos del token
+            } catch (error) {
+                console.error("Error decoding token:", error);
+            }
+        }
+    }, []);
 
     const navItemsPanel = [
         { title: 'Principal', iconClass: 'icon-screen-desktop', link: rootPath + '/dashboard' },
@@ -63,8 +81,8 @@ function SidebarDashboard({ userData, organizacionData }) {
 
                         </div>
                         <div className="text-wrapper">
-                            <p className="profile-name">{"ricardo"}</p>
-                            <p className="designation">{"Usuario:"}</p>
+                            <p className="profile-name">{username}</p>
+                            <p className="designation">{"Rol:"}</p>
                             <p className="designation">{"Especialista"}</p>
 
 

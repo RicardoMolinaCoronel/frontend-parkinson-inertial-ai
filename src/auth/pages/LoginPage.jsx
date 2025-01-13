@@ -5,6 +5,8 @@ import { AuthContext } from '../context/AuthContext';
 import LoginService from '../../services/LoginService';
 import '../../assets/css/LoadingSpinner.css'
 import { rootPath } from '../../rootPath';
+import { apiUrl } from '../../services/apiUrl';
+import { jwtDecode } from 'jwt-decode';
 export const LoginPage = () => {
     const navigate = useNavigate();
     const { login } = useContext(AuthContext);
@@ -13,25 +15,54 @@ export const LoginPage = () => {
     const [errorMessage, setErrorMessage] = useState(null)
     const [cargandoLogin, setCargandoLogin] = useState(false)
 
+    const getUserGroups = (token) => {
+        if (token) {
+            try {
+                const decodedToken = jwtDecode(token);
+                return decodedToken.groups || []; // Devuelve los grupos del token
+            } catch (error) {
+                console.error("Error decoding token:", error);
+                return [];
+            }
+        }
+        return [];
+    };
+    
+    // Verificar si el grupo específico está presente
+    const isUserInGroup = (groupName, token) => {
+        const userGroups = getUserGroups(token);
+        return userGroups.includes(groupName); // Devuelve true si el grupo está presente
+    };
+
+
+
     const handleLogin = async (event) => {
         event.preventDefault()
         setCargandoLogin(true)
         try {
-            /*const user = await LoginService.login({
-                user: username,
-                password: password
-            })*/
-            const user = { "id":5,"user":"sistemas","refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzdWFyaW8iOjUsInVzZXIiOiJzaXN0ZW1hcyIsInJvbCI6MTAwLCJleHAiOjE3MzQ3MTM5MDAsImlhdCI6MTczNDM2ODMwMH0.BYwQNepCCYSqzszbE-oWCPm0HA1nbf-MTv6IsVhg5nc"}
+            const user = await LoginService.login({
+                "username": username,
+                "password": password
+            })
+            // const user = { "id":5,"user":"sistemas","refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzdWFyaW8iOjUsInVzZXIiOiJzaXN0ZW1hcyIsInJvbCI6MTAwLCJleHAiOjE3MzQ3MTM5MDAsImlhdCI6MTczNDM2ODMwMH0.BYwQNepCCYSqzszbE-oWCPm0HA1nbf-MTv6IsVhg5nc"}
 
             console.log(user)
             setErrorMessage(null)
             setUsername('')
             setPassword('')
-            login(user);
-            setCargandoLogin(false)
-            navigate(rootPath + "/dashboard", {
-                replace: true,
-            });
+            const token = user.access
+            if (token) {
+                if (isUserInGroup("Especialista", token)) {
+                    login(user);
+                    setCargandoLogin(false)
+                    navigate(rootPath + "/dashboard", {
+                        replace: true,
+                    });
+                } else {
+                    window.location.href = apiUrl+`admin/?token=${token}`
+                }
+            }
+
             return;
             //  setUser(user)
 

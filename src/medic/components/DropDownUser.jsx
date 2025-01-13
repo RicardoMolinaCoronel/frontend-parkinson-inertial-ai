@@ -17,7 +17,7 @@ const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
     </div>
 ));
 
-const DropdownButtonUser = ({ userData, onLogout }) => {
+const DropdownButtonUser = ({ firstName, onLogout }) => {
     return (
         <Dropdown>
             <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-1">
@@ -27,7 +27,7 @@ const DropdownButtonUser = ({ userData, onLogout }) => {
                         size="2x"
                     /> */}
                     <img className="img-xs rounded-circle ms-2" src="images/user.jpg" alt="Profile image" />
-                    <span className="ml-2 font-weight-normal"> {"Ricardo Molina"} </span>
+                    <span className="ml-2 font-weight-normal"> {firstName} </span>
                     <FontAwesomeIcon
                         className="ml-2"
                         icon={faChevronDown}

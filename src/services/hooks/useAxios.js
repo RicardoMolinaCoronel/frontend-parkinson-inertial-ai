@@ -2,12 +2,12 @@ import axios from 'axios';
 import { AuthContext } from '../../auth/context/AuthContext';
 import { useContext } from 'react';
 import { apiUrl } from '../apiUrl';
-const useAxios = () => {
+const useAxios = (props = {}) => {
     const { authState, logout } = useContext(AuthContext);
     const baseURL = apiUrl
     const axiosInstance = axios.create({
         baseURL: baseURL,
-        //headers: { Authorization: `Bearer ${authState.user.refreshToken}`, 'Content-Type': 'application/json' }
+        headers: { Authorization: `Bearer ${authState.user.access}`, ...props.headers }
     });
 
     axiosInstance.interceptors.response.use(

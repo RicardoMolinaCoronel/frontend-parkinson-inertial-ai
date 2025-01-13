@@ -1,1 +1,1 @@
-export const apiUrl = "https://rptececuador.com/rtp-api-analytics"
+export const apiUrl = "http://127.0.0.1:8000/"

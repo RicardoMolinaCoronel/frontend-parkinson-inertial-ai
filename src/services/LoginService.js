@@ -1,10 +1,11 @@
 import axios from "axios";
 import { apiUrl } from "./apiUrl";
 
-const baseUrl = apiUrl + "/login/auth"
+const baseUrl = apiUrl + "backend/token/"
 
 const login = async credentials => {
     const { data } = await axios.post(baseUrl, credentials)
+    console.log(data)
     return data
 
 }
