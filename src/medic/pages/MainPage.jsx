@@ -62,7 +62,26 @@ function MainPage({ userData }) {
     const [error, setError] = useState(null); // Error en la petición
     const [cargandoLogin, setCargandoLogin] = useState(false)
     const axiosInstance = useAxios({headers: {"Content-Type": "multipart/form-data"}});
+    const axiosInstanceJson = useAxios({headers: {"Content-Type": "application/json"}});
+    const [inputObservaciones, setInputObservaciones] = useState('');
+    const [observacionesLoading, setObservacionesLoading] = useState(false);
+    const [idPrediccion, setIdPrediccion] = useState(null);
+    const [respObs, setRespObs] = useState("")
+    const handleInputObservacionesChange = (event) => {
+      setInputObservaciones(event.target.value);
+    };
+    const handleSubmitObservaciones = async () => {
+      setObservacionesLoading(true)
+      const resp = await PredictionService.update_prediction(axiosInstanceJson, idPrediccion, {
+        "observations": inputObservaciones
+    });
+    setObservacionesLoading(false)
 
+    setRespObs(resp)
+
+
+    }
+    
   // Manejar la petición al servidor
   const handlePredictionRequest = async () => {
     if (!selectedFile) {
@@ -73,6 +92,7 @@ function MainPage({ userData }) {
       setCargandoLogin(true)
       const resp = await PredictionService.prediction(axiosInstance, selectedFile);
       setResponseData(resp); // Guardar la respuesta del servidor
+      setIdPrediccion(resp.id)
       setError(null); // Limpiar errores
     } catch (err) {
       console.error(err);
@@ -146,8 +166,13 @@ function MainPage({ userData }) {
 
       doc.setFontSize(12);
       doc.text(`Porcentaje de probabilidad de predicción correcta: ${responseData.prediction_percentage}%`, 10, 80);
-      doc.text("Observaciones:", 10, 100);
       doc.text(responseData.message, 10, 110, { maxWidth: 190 });
+
+      doc.setFontSize(14);
+      doc.text("Observaciones del especialista encargado:", 10, 100);
+
+      doc.setFontSize(12);
+      doc.text(inputObservaciones, 10, 110, { maxWidth: 190 });
 
       doc.save("resultado_parkinson.pdf");
     };
@@ -279,6 +304,31 @@ function MainPage({ userData }) {
                             <h4 className='text-center'>{responseData.prediction_percentage}% de probabilidad</h4>                   
                             <p className="mt-4 text-center">{responseData.message}</p>                
                             <div className="mt-4 justify-content-center align-items-center">
+                                          {/* <input
+                                          type="text"
+                                          className="form-control mb-3"
+                                          placeholder="Ingrese un valor"
+                                          value={inputObservaciones}
+                                          onChange={handleInputObservacionesChange}
+                                        /> */}
+                                        <h5>Observaciones: </h5>
+                                                <textarea
+          className="form-control mb-3"
+          placeholder="Ingrese sus observaciones aquí"
+          value={inputObservaciones}
+          onChange={handleInputObservacionesChange}
+          rows="4" // Número de filas visibles
+        ></textarea>
+                                        {error && <p className="text-danger text-center">{error}</p>}
+                                        {!error && respObs && <p className="text-success text-center">Observaciones enviadas con éxito</p>}
+
+                                        <button
+                                          className="btn btn-primary me-3"
+                                          onClick={handleSubmitObservaciones}
+                                          disabled={observacionesLoading}
+                                        >
+                              {observacionesLoading ? <div className='loadingSpinner'></div> : 'ENVIAR OBSERVACIONES'}
+                                        </button>
                               <button className="btn btn-dark me-3" onClick={handleDownloadPDF}>
                                 DESCARGAR RESULTADOS
                               </button>
